@@ -45,11 +45,43 @@ Web版Slackで送信前メッセージをLLMで添削し、Before/After比較の
 
 ## 使い方
 
-1. Web版Slack (`app.slack.com`) でメッセージを入力
-2. `Cmd+Enter` (Mac) または `Ctrl+Enter` (Windows/Linux) を押す
-3. 添削結果がモーダルで表示される
-4. 必要に応じて添削後テキストを編集
-5. 「Send」ボタンでSlackに送信、「Cancel」でキャンセル
+### 1. メッセージを入力してショートカットを押す
+
+Web版Slack (`app.slack.com`) でメッセージを入力し、`Cmd+Enter` (Mac) または `Ctrl+Enter` (Windows/Linux) を押します。
+
+![ショートカットで添削開始](store/screenshots/01_shortcut.png)
+
+### 2. Before/After を確認・編集
+
+添削結果がモーダルで表示されます。左側が元のテキスト、右側が添削後のテキストです。添削後テキストはその場で編集できます。
+
+![Before/After比較モーダル](store/screenshots/02_modal.png)
+
+### 3. プリセットを切り替える
+
+モーダル右上のドロップダウンからプリセットを切り替えられます。切り替えると再度添削が実行されます。
+
+![プリセット選択](store/screenshots/03_preset_select.png)
+
+### 4. 送信またはキャンセル
+
+- **Send**: 添削後テキストをSlackの入力欄に反映して送信
+- **Copy**: 添削後テキストをクリップボードにコピー
+- **Cancel**: キャンセルしてモーダルを閉じる
+
+## プリセット管理
+
+オプションページでプリセットを管理できます。
+
+### プリセット一覧
+
+![プリセット一覧](store/screenshots/04_preset_list.png)
+
+### 新しいプリセットを追加
+
+「+ 新しいプリセットを追加」からカスタムプリセットを作成できます。
+
+![プリセット編集](store/screenshots/05_preset_edit.png)
 
 ## デフォルトプリセット
 
