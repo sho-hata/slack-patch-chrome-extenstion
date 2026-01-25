@@ -19,3 +19,6 @@ dist/
 
 # pnpm
 .pnpm-store
+
+# zip
+*.zip
