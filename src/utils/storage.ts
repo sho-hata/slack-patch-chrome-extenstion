@@ -10,7 +10,7 @@ export async function getStorageData(): Promise<StorageData> {
         // デフォルト値とマージして不足フィールドを補完
         const defaults = structuredClone(DEFAULT_STORAGE_DATA);
         resolve({
-          ...DEFAULT_STORAGE_DATA,
+          ...defaults,
           ...data,
         });
       } else {

@@ -1,4 +1,3 @@
-// プロンプトプリセット
 export type Preset = {
   id: string;
   name: string;
@@ -6,7 +5,6 @@ export type Preset = {
   userPromptTemplate: string;
 };
 
-// ショートカット設定
 export type ShortcutConfig = {
   key: string; // 'Enter', 'Space', etc.
   ctrlKey: boolean;
@@ -15,7 +13,6 @@ export type ShortcutConfig = {
   shiftKey: boolean;
 };
 
-// ストレージデータ構造
 export type StorageData = {
   apiKey: string;
   model: string;
@@ -24,7 +21,6 @@ export type StorageData = {
   shortcut: ShortcutConfig;
 };
 
-// Content Script → Service Worker メッセージ
 export type MessageType = 'PROOFREAD' | 'GET_SETTINGS';
 
 export type ProofreadRequest = {
@@ -39,7 +35,6 @@ export type GetSettingsRequest = {
 
 export type ExtensionMessage = ProofreadRequest | GetSettingsRequest;
 
-// Service Worker → Content Script レスポンス
 export type ProofreadSuccessResponse = {
   success: true;
   proofreadText: string;
@@ -61,7 +56,6 @@ export type ProofreadResponse =
   | ProofreadSuccessResponse
   | ProofreadErrorResponse;
 
-// Content Scriptに渡す設定（APIキーを含まない）
 export type ContentSettings = {
   hasApiKey: boolean;
   model: string;
@@ -74,10 +68,8 @@ export type SettingsResponse = {
   settings: ContentSettings;
 };
 
-// モーダルの状態
 export type ModalState = 'preview' | 'loading' | 'ready' | 'error' | 'sending';
 
-// OpenAI API レスポンス型
 export type OpenAIChatCompletionResponse = {
   id: string;
   object: string;

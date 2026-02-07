@@ -1,6 +1,10 @@
-import type { ContentSettings, Preset, ShortcutConfig, StorageData } from '@/types';
+import type {
+  ContentSettings,
+  Preset,
+  ShortcutConfig,
+  StorageData,
+} from '@/types';
 
-// デフォルトプリセット
 export const DEFAULT_PRESETS: Preset[] = [
   {
     id: 'business-proofreading',
@@ -20,7 +24,6 @@ export const DEFAULT_PRESETS: Preset[] = [
   },
 ];
 
-// デフォルトショートカット設定
 export const DEFAULT_SHORTCUT: ShortcutConfig = {
   key: 'Enter',
   ctrlKey: false,
@@ -29,7 +32,6 @@ export const DEFAULT_SHORTCUT: ShortcutConfig = {
   shiftKey: false,
 };
 
-// デフォルト設定
 export const DEFAULT_STORAGE_DATA: StorageData = {
   apiKey: '',
   model: 'gpt-4o-mini',
@@ -38,7 +40,6 @@ export const DEFAULT_STORAGE_DATA: StorageData = {
   shortcut: DEFAULT_SHORTCUT,
 };
 
-// Content Script 向けデフォルト設定（APIキーを含まない）
 export const DEFAULT_CONTENT_SETTINGS: ContentSettings = {
   hasApiKey: false,
   model: DEFAULT_STORAGE_DATA.model,
@@ -54,11 +55,8 @@ export const AVAILABLE_MODELS = [
   { id: 'gpt-5-mini', name: 'GPT-5 mini' },
 ] as const;
 
-// OpenAI API エンドポイント
 export const OPENAI_API_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 
-// API タイムアウト (ms)
 export const API_TIMEOUT = 30000;
 
-// ストレージキー
 export const STORAGE_KEY = 'slackPatchSettings';

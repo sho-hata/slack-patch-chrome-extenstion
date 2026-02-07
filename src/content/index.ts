@@ -1,8 +1,3 @@
-/**
- * Slack Message Patch Content Script
- * Slackページに注入され、ショートカット検出とモーダル制御を行う
- */
-
 import type {
   ContentSettings,
   GetSettingsRequest,
@@ -11,46 +6,36 @@ import type {
   SettingsResponse,
 } from '@/types';
 import { type ModalCallbacks, SlackPatchModal } from './modal';
-import { findActiveInputField, getInputText, setInputText, triggerSend } from './slack-dom';
+import {
+  findActiveInputField,
+  getInputText,
+  setInputText,
+  triggerSend,
+} from './slack-dom';
 
-// 現在のモーダルインスタンス
 let currentModal: SlackPatchModal | null = null;
 
-// 現在の入力欄（送信用に保持）
 let currentInputField: HTMLElement | null = null;
 
-// 設定のキャッシュ
 let cachedSettings: ContentSettings | null = null;
 
-// 初期化済みフラグ
 let initialized = false;
 
-/**
- * 拡張機能のコンテキストが有効かチェック
- */
 const isExtensionContextValid = (): boolean => {
   return typeof chrome !== 'undefined' && !!chrome.runtime?.id;
 };
 
-/**
- * 初期化
- */
 const initialize = (): void => {
   if (initialized) return;
   initialized = true;
 
   console.log('[Slack Message Patch] Initialized');
 
-  // キーボードショートカットのリスナーを登録
   document.addEventListener('keydown', handleKeyDown, true);
 
-  // 設定を事前読み込み
   loadSettings();
 };
 
-/**
- * 設定を読み込む
- */
 const loadSettings = async (): Promise<ContentSettings> => {
   return new Promise((resolve, reject) => {
     if (!isExtensionContextValid()) {
@@ -74,41 +59,33 @@ const loadSettings = async (): Promise<ContentSettings> => {
   });
 };
 
-/**
- * ショートカットキーが一致するかチェック
- */
 const isShortcutMatch = (event: KeyboardEvent): boolean => {
   if (!cachedSettings?.shortcut) {
-    // デフォルト: Cmd/Ctrl + Enter
-    return (event.metaKey || event.ctrlKey) && event.key === 'Enter' && !event.shiftKey;
+    return (
+      (event.metaKey || event.ctrlKey) &&
+      event.key === 'Enter' &&
+      !event.shiftKey
+    );
   }
 
   const shortcut = cachedSettings.shortcut;
 
-  // キーが一致するか
   if (event.key !== shortcut.key) return false;
 
-  // Ctrl/Cmdは OR 条件（どちらかが設定されていればどちらでも可）
   const ctrlOrMeta = shortcut.ctrlKey || shortcut.metaKey;
   if (ctrlOrMeta) {
     if (!event.ctrlKey && !event.metaKey) return false;
   } else {
-    // どちらも設定されていない場合は、どちらも押されていないことを確認
     if (event.ctrlKey || event.metaKey) return false;
   }
 
-  // Alt キー
   if (shortcut.altKey !== event.altKey) return false;
 
-  // Shift キー
   if (shortcut.shiftKey !== event.shiftKey) return false;
 
   return true;
 };
 
-/**
- * キーダウンイベントハンドラ
- */
 const handleKeyDown = (event: KeyboardEvent): void => {
   // IME変換中は無視
   if (event.isComposing) return;
@@ -144,12 +121,13 @@ const handleKeyDown = (event: KeyboardEvent): void => {
 const startProofreadFlow = async (originalText: string): Promise<void> => {
   // コンテキストチェック
   if (!isExtensionContextValid()) {
-    console.warn('[Slack Message Patch] Extension context invalidated. Please reload the page.');
+    console.warn(
+      '[Slack Message Patch] Extension context invalidated. Please reload the page.',
+    );
     return;
   }
 
   try {
-    // 設定を取得
     const settings = cachedSettings || (await loadSettings());
 
     // モーダルコールバック
@@ -182,7 +160,10 @@ const startProofreadFlow = async (originalText: string): Promise<void> => {
     currentModal = new SlackPatchModal(callbacks);
     currentModal.show(originalText, settings);
   } catch (error) {
-    console.error('[Slack Message Patch] Failed to start proofread flow:', error);
+    console.error(
+      '[Slack Message Patch] Failed to start proofread flow:',
+      error,
+    );
   }
 };
 
@@ -192,7 +173,9 @@ const startProofreadFlow = async (originalText: string): Promise<void> => {
 const requestProofread = (text: string, presetId?: string): void => {
   if (!isExtensionContextValid()) {
     if (currentModal) {
-      currentModal.setError('拡張機能が更新されました。ページを再読み込みしてください。');
+      currentModal.setError(
+        '拡張機能が更新されました。ページを再読み込みしてください。',
+      );
     }
     return;
   }
@@ -207,7 +190,9 @@ const requestProofread = (text: string, presetId?: string): void => {
     chrome.runtime.sendMessage(message, (response: ProofreadResponse) => {
       if (chrome.runtime.lastError) {
         if (currentModal) {
-          currentModal.setError('拡張機能との通信に失敗しました。ページを再読み込みしてください。');
+          currentModal.setError(
+            '拡張機能との通信に失敗しました。ページを再読み込みしてください。',
+          );
         }
         return;
       }
@@ -222,7 +207,9 @@ const requestProofread = (text: string, presetId?: string): void => {
     });
   } catch {
     if (currentModal) {
-      currentModal.setError('拡張機能との通信に失敗しました。ページを再読み込みしてください。');
+      currentModal.setError(
+        '拡張機能との通信に失敗しました。ページを再読み込みしてください。',
+      );
     }
   }
 };
@@ -246,7 +233,9 @@ const handleSend = (text: string): void => {
     }, 100);
   } else {
     // 設定失敗時はモーダルを閉じてユーザーに知らせる
-    currentModal.setError('テキストの設定に失敗しました。手動でコピー&ペーストしてください。');
+    currentModal.setError(
+      'テキストの設定に失敗しました。手動でコピー&ペーストしてください。',
+    );
   }
 };
 
@@ -310,7 +299,9 @@ const handleSendOriginal = (originalText: string): void => {
     }, 100);
   } else {
     // 設定失敗時はモーダルを閉じてユーザーに知らせる
-    currentModal.setError('テキストの設定に失敗しました。手動でコピー&ペーストしてください。');
+    currentModal.setError(
+      'テキストの設定に失敗しました。手動でコピー&ペーストしてください。',
+    );
   }
 };
 
