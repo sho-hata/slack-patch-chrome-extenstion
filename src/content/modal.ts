@@ -3,7 +3,7 @@
  * Shadow DOMを使用してSlackのCSSと隔離
  */
 
-import type { ModalState, Preset, StorageData } from '@/types';
+import type { ContentSettings, ModalState, Preset } from '@/types';
 import styles from './styles.css?inline';
 
 export type ModalCallbacks = {
@@ -50,11 +50,11 @@ export class SlackPatchModal {
     this.shadowRoot.appendChild(styleElement);
   }
 
-  show(originalText: string, settings: StorageData): void {
+  show(originalText: string, settings: ContentSettings): void {
     this.originalText = originalText;
     this.presets = settings.presets;
     this.activePresetId = settings.activePresetId;
-    this.hasApiKey = !!settings.apiKey;
+    this.hasApiKey = settings.hasApiKey;
     this.state = 'preview';
 
     if (document.activeElement instanceof HTMLElement) {

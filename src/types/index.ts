@@ -61,8 +61,17 @@ export type ProofreadResponse =
   | ProofreadSuccessResponse
   | ProofreadErrorResponse;
 
+// Content Scriptに渡す設定（APIキーを含まない）
+export type ContentSettings = {
+  hasApiKey: boolean;
+  model: string;
+  presets: Preset[];
+  activePresetId: string;
+  shortcut: ShortcutConfig;
+};
+
 export type SettingsResponse = {
-  settings: StorageData;
+  settings: ContentSettings;
 };
 
 // モーダルの状態

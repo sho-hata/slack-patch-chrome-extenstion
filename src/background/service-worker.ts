@@ -1,11 +1,22 @@
 import type {
+  ContentSettings,
   ExtensionMessage,
   OpenAIChatCompletionResponse,
   ProofreadResponse,
   SettingsResponse,
+  StorageData,
 } from '@/types';
-import { API_TIMEOUT, OPENAI_API_ENDPOINT } from '@/utils/constants';
+import { API_TIMEOUT, DEFAULT_CONTENT_SETTINGS, OPENAI_API_ENDPOINT } from '@/utils/constants';
 import { getActivePreset, getStorageData } from '@/utils/storage';
+
+/** StorageData から APIキーを除外し、Content Script 向けの設定に変換する */
+const toContentSettings = (data: StorageData): ContentSettings => ({
+  hasApiKey: !!data.apiKey,
+  model: data.model,
+  presets: data.presets,
+  activePresetId: data.activePresetId,
+  shortcut: data.shortcut,
+});
 
 /**
  * 送信元を検証する
@@ -76,12 +87,9 @@ chrome.runtime.onMessage.addListener(
 
     if (message.type === 'GET_SETTINGS') {
       getStorageData()
-        .then((settings) => sendResponse({ settings }))
+        .then((settings) => sendResponse({ settings: toContentSettings(settings) }))
         .catch(() => {
-          // エラー時はデフォルト設定を返す
-          import('@/utils/constants').then(({ DEFAULT_STORAGE_DATA }) => {
-            sendResponse({ settings: DEFAULT_STORAGE_DATA });
-          });
+          sendResponse({ settings: DEFAULT_CONTENT_SETTINGS });
         });
       return true;
     }

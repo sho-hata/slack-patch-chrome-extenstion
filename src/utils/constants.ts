@@ -1,4 +1,4 @@
-import type { Preset, ShortcutConfig, StorageData } from '@/types';
+import type { ContentSettings, Preset, ShortcutConfig, StorageData } from '@/types';
 
 // デフォルトプリセット
 export const DEFAULT_PRESETS: Preset[] = [
@@ -36,6 +36,15 @@ export const DEFAULT_STORAGE_DATA: StorageData = {
   presets: DEFAULT_PRESETS,
   activePresetId: 'business-proofreading',
   shortcut: DEFAULT_SHORTCUT,
+};
+
+// Content Script 向けデフォルト設定（APIキーを含まない）
+export const DEFAULT_CONTENT_SETTINGS: ContentSettings = {
+  hasApiKey: false,
+  model: DEFAULT_STORAGE_DATA.model,
+  presets: DEFAULT_STORAGE_DATA.presets,
+  activePresetId: DEFAULT_STORAGE_DATA.activePresetId,
+  shortcut: DEFAULT_STORAGE_DATA.shortcut,
 };
 
 export const AVAILABLE_MODELS = [

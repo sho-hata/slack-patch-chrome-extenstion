@@ -4,11 +4,11 @@
  */
 
 import type {
+  ContentSettings,
   GetSettingsRequest,
   ProofreadRequest,
   ProofreadResponse,
   SettingsResponse,
-  StorageData,
 } from '@/types';
 import { type ModalCallbacks, SlackPatchModal } from './modal';
 import { findActiveInputField, getInputText, setInputText, triggerSend } from './slack-dom';
@@ -20,7 +20,7 @@ let currentModal: SlackPatchModal | null = null;
 let currentInputField: HTMLElement | null = null;
 
 // 設定のキャッシュ
-let cachedSettings: StorageData | null = null;
+let cachedSettings: ContentSettings | null = null;
 
 // 初期化済みフラグ
 let initialized = false;
@@ -51,7 +51,7 @@ const initialize = (): void => {
 /**
  * 設定を読み込む
  */
-const loadSettings = async (): Promise<StorageData> => {
+const loadSettings = async (): Promise<ContentSettings> => {
   return new Promise((resolve, reject) => {
     if (!isExtensionContextValid()) {
       reject(new Error('Extension context invalidated'));
