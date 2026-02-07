@@ -1,6 +1,6 @@
 {
   "name": "slack-patch-chrome-extension",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Web版Slackで送信前メッセージをLLMで添削し、Before/After比較で編集・送信できるChrome拡張",
   "type": "module",
   "engines": {

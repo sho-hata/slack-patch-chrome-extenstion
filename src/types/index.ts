@@ -48,10 +48,18 @@ export type ProofreadSuccessResponse = {
 export type ProofreadErrorResponse = {
   success: false;
   error: string;
-  errorType: 'AUTH_ERROR' | 'RATE_LIMIT' | 'SERVER_ERROR' | 'NETWORK_ERROR' | 'NO_API_KEY';
+  errorType:
+    | 'AUTH_ERROR'
+    | 'RATE_LIMIT'
+    | 'SERVER_ERROR'
+    | 'NETWORK_ERROR'
+    | 'NO_API_KEY'
+    | 'PRIVATE_CONVERSATION';
 };
 
-export type ProofreadResponse = ProofreadSuccessResponse | ProofreadErrorResponse;
+export type ProofreadResponse =
+  | ProofreadSuccessResponse
+  | ProofreadErrorResponse;
 
 export type SettingsResponse = {
   settings: StorageData;

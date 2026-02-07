@@ -7,13 +7,59 @@ import type {
 import { API_TIMEOUT, OPENAI_API_ENDPOINT } from '@/utils/constants';
 import { getActivePreset, getStorageData } from '@/utils/storage';
 
+/**
+ * 送信元を検証する
+ * 自分自身の拡張機能（コンテントスクリプト/オプションページ）からのメッセージのみ許可
+ */
+const isValidSender = (sender: chrome.runtime.MessageSender): boolean => {
+  // 送信元の拡張機能IDが自分自身であることを確認
+  if (sender.id !== chrome.runtime.id) {
+    console.warn(
+      '[Slack Message Patch] Rejected message from external extension:',
+      sender.id,
+    );
+    return false;
+  }
+
+  // 送信元URLがあれば、それも検証（chrome-extension:// または許可されたホストか）
+  if (sender.url) {
+    const url = new URL(sender.url);
+    // 自分の拡張機能ページからのリクエスト
+    if (
+      url.protocol === 'chrome-extension:' &&
+      url.hostname === chrome.runtime.id
+    ) {
+      return true;
+    }
+    // Slackのページからのコンテントスクリプト
+    if (
+      url.hostname === 'app.slack.com' ||
+      url.hostname.endsWith('.slack.com')
+    ) {
+      return true;
+    }
+    console.warn(
+      '[Slack Message Patch] Rejected message from unexpected URL:',
+      sender.url,
+    );
+    return false;
+  }
+
+  // sender.urlがない場合（Service Workerなど）はIDチェックのみで許可
+  return true;
+};
+
 // メッセージリスナー
 chrome.runtime.onMessage.addListener(
   (
     message: ExtensionMessage,
-    _sender: chrome.runtime.MessageSender,
-    sendResponse: (response: ProofreadResponse | SettingsResponse) => void
+    sender: chrome.runtime.MessageSender,
+    sendResponse: (response: ProofreadResponse | SettingsResponse) => void,
   ) => {
+    if (!isValidSender(sender)) {
+      return false;
+    }
+
     if (message.type === 'PROOFREAD') {
       handleProofread(message.text, message.presetId)
         .then(sendResponse)
@@ -41,24 +87,30 @@ chrome.runtime.onMessage.addListener(
     }
 
     return false;
-  }
+  },
 );
 
 // 添削処理
-async function handleProofread(text: string, presetId?: string): Promise<ProofreadResponse> {
+async function handleProofread(
+  text: string,
+  presetId?: string,
+): Promise<ProofreadResponse> {
   const settings = await getStorageData();
 
   // APIキーチェック
   if (!settings.apiKey) {
     return {
       success: false,
-      error: 'APIキーが設定されていません。拡張機能のオプションページで設定してください。',
+      error:
+        'APIキーが設定されていません。拡張機能のオプションページで設定してください。',
       errorType: 'NO_API_KEY',
     };
   }
 
   // プリセット取得
-  let preset = presetId ? settings.presets.find((p) => p.id === presetId) : await getActivePreset();
+  let preset = presetId
+    ? settings.presets.find((p) => p.id === presetId)
+    : await getActivePreset();
 
   if (!preset) {
     preset = settings.presets[0];
@@ -146,7 +198,8 @@ const handleApiError = (status: number): ProofreadResponse => {
     case 429:
       return {
         success: false,
-        error: 'APIのレート制限に達しました。しばらく待ってからお試しください。',
+        error:
+          'APIのレート制限に達しました。しばらく待ってからお試しください。',
         errorType: 'RATE_LIMIT',
       };
     case 500:
@@ -155,7 +208,8 @@ const handleApiError = (status: number): ProofreadResponse => {
     case 504:
       return {
         success: false,
-        error: 'OpenAI APIサーバーでエラーが発生しました。しばらく待ってからお試しください。',
+        error:
+          'OpenAI APIサーバーでエラーが発生しました。しばらく待ってからお試しください。',
         errorType: 'SERVER_ERROR',
       };
     default:

@@ -38,12 +38,11 @@ export const DEFAULT_STORAGE_DATA: StorageData = {
   shortcut: DEFAULT_SHORTCUT,
 };
 
-// 利用可能なモデル
 export const AVAILABLE_MODELS = [
   { id: 'gpt-4o-mini', name: 'GPT-4o mini (推奨)' },
   { id: 'gpt-4o', name: 'GPT-4o' },
-  { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' },
-  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo' },
+  { id: 'gpt-5', name: 'GPT-5' },
+  { id: 'gpt-5-mini', name: 'GPT-5 mini' },
 ] as const;
 
 // OpenAI API エンドポイント
